@@ -45,7 +45,8 @@ SiteNames <- sqlQuery(con, nameqry)
 site_WQ <- merge(SiteNames, SiteWQ, by="Site_ID")
 
 #GROUP BY Trial
-pHqry <- "SELECT Site_ID, avg(pH) AS Average_pH, max(pH) AS Max_pH, min(pH) AS Min_pH  #must rename column names, otherwise event number will be column name
+#must rename column names, otherwise event number will be column name
+pHqry <- "SELECT Site_ID, avg(pH) AS Average_pH, max(pH) AS Max_pH, min(pH) AS Min_pH  
       FROM tbl_EVENTS
       GROUP BY Site_ID"
 pHWQ <- sqlQuery(con, pHqry)
