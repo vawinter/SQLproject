@@ -1,5 +1,4 @@
-# 
-# 
+
 # # Install package
 # install.packages("RODBC")
 # 
@@ -22,6 +21,9 @@ con <- odbcConnect("ERMNSQL")
 #view all tables
 sqlTables(con, tableType = "TABLE")$TABLE_NAME
 
+# Set up driver info and database path
+con <- odbcConnect("programSQL")
+
 #view column names in a table
 sqlColumns(con, "tbl_Events")$COLUMN_NAME
 sqlColumns(con, "tbl_Sites")$COLUMN_NAME
@@ -32,3 +34,4 @@ sqlColumns(con, "tbl_Habitat_Transect")$COLUMN_NAME
 sqlColumns(con, "tbl_Habitat")$COLUMN_NAME
 
 #tlu tables have metadata
+
