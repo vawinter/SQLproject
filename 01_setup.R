@@ -4,14 +4,16 @@
 # 
 # library(RODBC)
 # 
-# # Set up driver info and database path
-# DRIVERINFO <- "Driver={Microsoft Access Driver (*.accdb)};"
-# MDBPATH <- "ERMN_Fish_20221101.accdb"
-# PATH <- paste0(DRIVERINFO, "DBQ=", MDBPATH)
-# 
-# ##Read in tables from Access database 
-# db <- file.path("ERMN_Fish_20221101.accdb")
-# ch <- odbcDriverConnect(db)
+# Set up driver info and database path
+DRIVERINFO <- "Driver={Microsoft Access Driver (*.accdb)};"
+MDBPATH <- "ERMNSQL"
+PATH <- paste0(DRIVERINFO, "DBQ=", MDBPATH)
+
+con <- odbcConnect(PATH)
+
+##Read in tables from Access database
+db <- file.path("ERMN_Fish_20221101.accdb")
+ch <- odbcDriverConnect(db)
 
 #call library
 library(RODBC)
