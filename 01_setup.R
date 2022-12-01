@@ -4,7 +4,7 @@
 # 
 # library(RODBC)
 # 
-# # Set up driver info and database path
+## Set up driver info and database path
 # DRIVERINFO <- "Driver={Microsoft Access Driver (*.accdb)};"
 # MDBPATH <- "ERMN_Fish_20221101.accdb"
 # PATH <- paste0(DRIVERINFO, "DBQ=", MDBPATH)
@@ -51,5 +51,9 @@ qry6 <- "SELECT * FROM tbl_Events
 combo <- sqlQuery(con, qry6)
 
 
-
+#GROUP BY Trial
+pHqry <- "SELECT Site_ID, avg(pH) AS Average_pH, max(pH) AS Max_pH, min(pH) AS Min_pH  
+      FROM tbl_EVENTS
+      GROUP BY Site_ID"
+pHWQ <- sqlQuery(con, pHqry)
 
