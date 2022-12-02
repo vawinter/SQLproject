@@ -95,7 +95,7 @@ EX. <C:\Users\Lily\Desktop\SQL\Database.accdb>
 # sqlTables(con, tableType = "TABLE")$TABLE_NAME
 ```
 
-## Querying tables
+## Querying tables 
 
 You can also embed plots, for example:
 
