@@ -1,0 +1,86 @@
+---
+title: "RODBC: Integrating Access and SQL"
+author: "A. Belskis, L. Cao, M. Stum, V. Winter"
+date: "12/2/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Our aim
+The main goal of this project was to integrate a Microsoft Access database into R
+using the **RODBC** package. While this appeared very straightforward,
+we ran into several complex issues. Here, we document the problems, solutions we found, and
+some results we were able to acomplish.
+
+## What is an Access database?
+### Microsoft Access
+Access is a database management system using Microsoft’s Jet Database Engine
+Databases are created and stored in a unique format, making them not readily accessible to everyone
+
+### Getting Access data into R Introduction
+There are two methods to connect with Access databases
+1. Using the ODBC (Open DataBase Connectivity) facility
+2. Using the DBI (DataBase Interface) package in R
+ODBC allows connection to a database to be opened
+Then, SQL is needed to actually import database tables into R
+
+### ODBC
+ODBC allows access to a variety of database systems via a common interface
+ODBC requires a specific driver to be installed (in our case, a Microsoft Access Driver which is already installed with the installation of Office) which serves as a translation layer between ODBC and the database system
+
+(insert pic here)
+
+## SQL Project Roadblocks
+*Microsoft Access isn’t included in MS Office for macOS*
+This means although you don’t need to have the microsoft access file opened to use in R, you won’t have the Microsoft Access Driver needed 
+
+### Issue #1: Driver instillation 
+
+First, you want to make sure you have the relevant ODBC driver installed
+
+If you have Microsoft Access installed, the driver should already be installed together however you can also install the drivers separately
+
+To install separately, you can find the 32 bit or 64 bit driver here: o <https://www.microsoft.com/en-us/download/details.aspx?id=>
+
+There are two ways that information about the ODBC driver and the location of the database system is provided to ODBC
+
+First way is to provide all information from within R each time the connection to the database system is established
+
+Alternatively, you can establish a DSN (Data Source Name) so that the DNS describes the connection and only the DSN needs to be provided each time a connection is made
+
+If you want to do it the first method, you need to have the path to the database
+
+EX. C:\Users\Lily\Desktop\SQL\Database.accdb
+
+## To access and import Access Tables into R using ODBC:
+
+```{r, echo = TRUE}
+#Install RODBC package and load the library
+
+install.packages("RODBC")
+
+library(RODBC)
+
+#Establish a connection, using the DSN name you assigned in the previous steps or by using the path of your database
+
+con <- odbcConnect("SQL_Driver")
+
+#To get the names of the tables in the Access database, you can use the sqlTables() function
+
+#Adding the tableType = “TABLE” parameter will return just the table names.
+
+sqlTables(con, tableType = "TABLE")$TABLE_NAME
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
