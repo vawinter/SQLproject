@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 The main goal of this project was to integrate a Microsoft Access database into R
 using the **RODBC** package. While this appeared very straightforward,
 we ran into several complex issues. Here, we document the problems, solutions we found, and
-some results we were able to acomplish.
+some results we were able to accomplish.
 
 ## What is an Access database?
 ### Microsoft Access
@@ -53,54 +53,90 @@ Alternatively, you can establish a DSN (Data Source Name) so that the DNS descri
 
 If you want to do it the first method, you need to have the path to the database
 
-EX. C:\Users\Lily\Desktop\SQL\Database.accdb
+EX. <C:\Users\Lily\Desktop\SQL\Database.accdb>
 
-### 1. Go to control panel
+#### 1. Go to control panel
 ![](Picture1.png)
 
-### 2. Search ODBC data sources. Click on Set up ODBC data sources (either 32-bit or 64-bit depending on your version of Microsoft. In our case, we are using 64-bit)
+#### 2. Search ODBC data sources. Click on Set up ODBC data sources (either 32-bit or 64-bit depending on your version of Microsoft. In our case, we are using 64-bit)
 ![](Picture2.png)
 
-### 3. Under User DSN, you will see a list of the User Data Sources. Click Add…
+#### 3. Under User DSN, you will see a list of the User Data Sources. Click Add…
 ![](Picture3.png)
 
-### 4. Click on Microsoft Access Driver(*.mdb, *.accdb). Click Finish
+#### 4. Click on Microsoft Access Driver(*.mdb, *.accdb). Click Finish
 ![](Picture4.png)
 
-### 5. Name your Data Source Name (DSN) and add a description. Click OK
+#### 5. Name your Data Source Name (DSN) and add a description. Click OK
 ![](Picture5.png)
 
-### 6. Now, under User DSN you should see your newly named DSN. Click OK.
+#### 6. Now, under User DSN you should see your newly named DSN. Click OK.
 ![](Picture6.png)
 
-### 7.For mac, the ODBC Administrator equivalent is found in Applications/Utilities (which I can’t show since I can’t get Access on Mac)
+#### 7.For mac, the ODBC Administrator equivalent is found in Applications/Utilities (which I can’t show since I can’t get Access on Mac)
 
 ## To access and import Access Tables into R using ODBC:
 
 ```{r, echo = TRUE}
-#Install RODBC package and load the library
-
-install.packages("RODBC")
-
-library(RODBC)
-
-#Establish a connection, using the DSN name you assigned in the previous steps or by using the path of your database
-
-con <- odbcConnect("SQL_Driver")
-
-#To get the names of the tables in the Access database, you can use the sqlTables() function
-
-#Adding the tableType = “TABLE” parameter will return just the table names.
-
-sqlTables(con, tableType = "TABLE")$TABLE_NAME
+# #Install RODBC package and load the library
+# 
+# install.packages("RODBC")
+# 
+# library(RODBC)
+# 
+# #Establish a connection, using the DSN name you assigned in the previous steps or by using the path of your database
+# 
+# con <- odbcConnect("SQL_Driver")
+# 
+# #To get the names of the tables in the Access database, you can use the sqlTables() function
+# 
+# #Adding the tableType = “TABLE” parameter will return just the table names.
+# 
+# sqlTables(con, tableType = "TABLE")$TABLE_NAME
 ```
 
-## Including Plots
+## Querying tables
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r, echo=TRUE}
+# #view all tables
+# sqlTables(con, tableType = "TABLE")$TABLE_NAME
+# 
+# 
+# #view column names in a table
+# sqlColumns(con, "tbl_Events")$COLUMN_NAME
+# sqlColumns(con, "tbl_Sites")$COLUMN_NAME
+# sqlColumns(con, "tbl_Fish")$COLUMN_NAME
+# sqlColumns(con, "tbl_Fish_Count")$COLUMN_NAME
+# sqlColumns(con, "tbl_Habitat_Transect_Fields")$COLUMN_NAME
+# sqlColumns(con, "tbl_Habitat_Transect")$COLUMN_NAME
+# sqlColumns(con, "tbl_Habitat")
+# 
+# #tlu tables have metadata
+# 
+# WQqry <-  "SELECT Event_ID, Site_ID, Start_Date, Visit_Number, WQ_Time, Temp_C,
+#         SpecficConductance, DO_mgl, DO_Percent, pH, WaterColor, Secchi_Depth_cm 
+#         FROM  tbl_Events"
+# 
+# SiteWQ <- sqlQuery(con, WQqry)
+# 
+# nameqry <- "SELECT Site_ID, Site_Name From tbl_Sites"
+# SiteNames <- sqlQuery(con, nameqry)
+# 
+# SiteWQ <- merge(SiteNames, SiteWQ, by="Site_ID")
+# 
+# qry6 <- "SELECT * FROM tbl_Events 
+#         INNER JOIN tbl_Sites ON tbl_Events.Site_ID = tbl_SItes.Site_ID"
+# 
+# combo <- sqlQuery(con, qry6)
+# 
+# 
+# #GROUP BY Trial
+# pHqry <- "SELECT Site_ID, avg(pH) AS Average_pH, max(pH) AS Max_pH, min(pH) AS Min_pH  
+#       FROM tbl_EVENTS
+#       GROUP BY Site_ID"
+# pHWQ <- sqlQuery(con, pHqry)
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
