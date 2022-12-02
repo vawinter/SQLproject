@@ -55,6 +55,26 @@ If you want to do it the first method, you need to have the path to the database
 
 EX. C:\Users\Lily\Desktop\SQL\Database.accdb
 
+### 1. Go to control panel
+![](Picture1.png)
+
+### 2. Search ODBC data sources. Click on Set up ODBC data sources (either 32-bit or 64-bit depending on your version of Microsoft. In our case, we are using 64-bit)
+![](Picture2.png)
+
+### 3. Under User DSN, you will see a list of the User Data Sources. Click Add…
+![](Picture3.png)
+
+### 4. Click on Microsoft Access Driver(*.mdb, *.accdb). Click Finish
+![](Picture4.png)
+
+### 5. Name your Data Source Name (DSN) and add a description. Click OK
+![](Picture5.png)
+
+### 6. Now, under User DSN you should see your newly named DSN. Click OK.
+![](Picture6.png)
+
+### 7.For mac, the ODBC Administrator equivalent is found in Applications/Utilities (which I can’t show since I can’t get Access on Mac)
+
 ## To access and import Access Tables into R using ODBC:
 
 ```{r, echo = TRUE}
