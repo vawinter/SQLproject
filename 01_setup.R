@@ -4,6 +4,7 @@
 # 
 # library(RODBC)
 # 
+
 # Set up driver info and database path
 DRIVERINFO <- "Driver={Microsoft Access Driver (*.accdb)};"
 MDBPATH <- "ERMNSQL"
@@ -18,6 +19,7 @@ ch <- odbcDriverConnect(db)
 #call library
 library(RODBC)
 #establish connection to Microsoft driver that you created
+#manually 
 con <- odbcConnect("ERMNSQL")
 
 #view all tables
@@ -31,7 +33,7 @@ sqlColumns(con, "tbl_Fish")$COLUMN_NAME
 sqlColumns(con, "tbl_Fish_Count")$COLUMN_NAME
 sqlColumns(con, "tbl_Habitat_Transect_Fields")$COLUMN_NAME
 sqlColumns(con, "tbl_Habitat_Transect")$COLUMN_NAME
-habitat <- sqlColumns(con, "tbl_Habitat")
+sqlColumns(con, "tbl_Habitat")
 
 #tlu tables have metadata
 
@@ -44,10 +46,15 @@ SiteWQ <- sqlQuery(con, WQqry)
 nameqry <- "SELECT Site_ID, Site_Name From tbl_Sites"
 SiteNames <- sqlQuery(con, nameqry)
 
-site_WQ <- merge(SiteNames, SiteWQ, by="Site_ID")
+SiteWQ <- merge(SiteNames, SiteWQ, by="Site_ID")
+
+qry6 <- "SELECT * FROM tbl_Events 
+        INNER JOIN tbl_Sites ON tbl_Events.Site_ID = tbl_SItes.Site_ID"
+
+combo <- sqlQuery(con, qry6)
+
 
 #GROUP BY Trial
-#must rename column names, otherwise event number will be column name
 pHqry <- "SELECT Site_ID, avg(pH) AS Average_pH, max(pH) AS Max_pH, min(pH) AS Min_pH  
       FROM tbl_EVENTS
       GROUP BY Site_ID"
