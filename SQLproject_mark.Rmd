@@ -204,4 +204,30 @@ One way to potentially fix this is if you have R that has both 32-bit and 64-bit
 ### Syntax differences between 'DBI' and 'RODBC'
 If you are familiar with arguments for SQL queries with the 'DBI' package, the arguments and syntax look a little different under the 'RODBC' package. This made it a little more challenging than we initially thought to just transfer the queries we learned to do in class.
 
-(table of argument differences)
+```{r, echo=FALSE, out.width = "80%"}
+knitr::include_graphics("Doc_1.jpg")
+```
+
+```{r, echo=FALSE, out.width = "80%"}
+knitr::include_graphics("Doc_2.jpg")
+```
+
+```{r, echo=FALSE, out.width = "80%"}
+knitr::include_graphics("Doc_3.jpg")
+```
+
+```{r, echo=FALSE, out.width = "80%"}
+knitr::include_graphics("Doc_4.jpg")
+```
+
+```{r, echo=FALSE, out.width = "80%"}
+knitr::include_graphics("Doc_5.jpg")
+```
+
+```{r, echo=FALSE, out.width = "80%"}
+knitr::include_graphics("Doc_6.jpg")
+```
+
+```{r, echo=FALSE, out.width = "80%"}
+knitr::include_graphics("Doc_7.jpg")
+```
