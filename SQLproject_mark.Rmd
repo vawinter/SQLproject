@@ -31,7 +31,9 @@ Then, SQL is needed to actually import database tables into R
 ODBC allows access to a variety of database systems via a common interface
 ODBC requires a specific driver to be installed (in our case, a Microsoft Access Driver which is already installed with the installation of Office) which serves as a translation layer between ODBC and the database system
 
-(insert pic here)
+```{r, echo=FALSE, out.width = "80%"}
+knitr::include_graphics("Picture.png")
+```
 
 ## Interfacing with a Microsoft Access database through Rstudio
 Our project was investigating using the R package 'RODBC' to establish a connection
@@ -72,10 +74,6 @@ https://www.microsoft.com/en-us/download/details.aspx?id=54920
 The first way is to provide all information from within R each time the connection to the database system is established. To do this, you will need the file path of the database (EX. C:\Users\Lily\Desktop\SQL\Database.accdb),
 and the driver information, as in the two examples above.
 
-## Compatability Issues
-Unfortunately there are compatability issues with this package when running 64-bit Windowns and Rstudio.
-Some users reported having to change Rstudio to the 32-bit option. We tried several versions of Access and
-Rstudio and were unsuccessful at establishing a connection using the database path. 
 
 ## Establishing a DSN 
 Alternatively, you can establish a DSN (Data Source Name) so that the DNS describes the connection and only the DSN needs to be provided each time a connection is made. This is a workaround for establishing the Driver Connection on Windows, that seems to work ~ 50% of the time
@@ -83,32 +81,32 @@ Alternatively, you can establish a DSN (Data Source Name) so that the DNS descri
 Source: https://www.r-bloggers.com/2013/01/getting-access-data-into-r/  
 
 ## Step 1: Go to Control Panel 
-```{r}
+```{r, echo=FALSE, out.width = "80%"}
 knitr::include_graphics("Picture1.png")
 ```
 
 ## Step 2: Search 'ODBC data sources'. Click on Set up ODBC data sources (either 32-bit or 64-bit depending on your version of Microsoft. In our case, we are using 64-bit)
-```{r}
+```{r, echo=FALSE, out.width = "80%"}
 knitr::include_graphics("Picture2.png")
 ```
 
 ## Step 3: Under 'User DSN', you will see a list of the User Data Sources. Click 'Add…'
-```{r}
+```{r, echo=FALSE, out.width = "80%"}
 knitr::include_graphics("Picture3.png")
 ```
 
 ## Step 4: Select Microsoft Access Driver(*.mdb, *.accdb). Then click 'Finish'
-```{r}
+```{r, echo=FALSE, out.width = "80%"}
 knitr::include_graphics("Picture4.png")
 ```
 
 ## Step 5: Name your Data Source Name (DSN) and add a description, then click 'OK'
-```{r}
+```{r, echo=FALSE, out.width = "80%"}
 knitr::include_graphics("Picture5.png")
 ```
 
 ## Step 6: Now, under 'User DSN"'you should see your newly named DSN. Click 'OK' again to close the window. 
-```{r}
+```{r, echo=FALSE, out.width = "80%"}
 knitr::include_graphics("Picture6.png")
 ```
 
@@ -116,7 +114,8 @@ knitr::include_graphics("Picture6.png")
 ```{r}
 #load package
 library(RODBC)
-#establish connection to DSN that you created manually 
+#establish connection to DSN that you created manually
+#we named our DSN 'ERMNSQL'
 con <- odbcConnect("ERMNSQL") #only the name is needed, not the full path
 ```
 
@@ -129,24 +128,30 @@ sqlTables(con, tableType = "TABLE")$TABLE_NAME
 ```{r}
 sqlColumns(con, "tbl_Events")$COLUMN_NAME
 sqlColumns(con, "tbl_Sites")$COLUMN_NAME
-sqlColumns(con, "tbl_Fish")$COLUMN_NAME
 sqlColumns(con, "tbl_Fish_Count")$COLUMN_NAME
-sqlColumns(con, "tbl_Habitat_Transect_Fields")$COLUMN_NAME
-sqlColumns(con, "tbl_Habitat_Transect")$COLUMN_NAME
+```
+## View specific tables
+```{r}
+sqlFetch(con, "tbl_Events", max = 10)
 ```
 
-## Building queries to select specific columsn from a table
-```{r}
+
+## Building queries to select specific columns from a table
+```{r echo=TRUE}
 WQqry <-  "SELECT Event_ID, Site_ID, Start_Date, Visit_Number, WQ_Time, Temp_C,
         SpecficConductance, DO_mgl, DO_Percent, pH, WaterColor, Secchi_Depth_cm 
         FROM  tbl_Events" #embed the SQL query language in an object
 
 #use the RODBC command 'sqlQuery' to pass your query object to the connected database
-SiteWQ <- sqlQuery(con, WQqry) 
+SiteWQ <- sqlQuery(con, WQqry)
+
+head(SiteWQ)
 
 #another query from a different table
 nameqry <- "SELECT Site_ID, Site_Name From tbl_Sites"
 SiteNames <- sqlQuery(con, nameqry)
+
+head(SiteNames)
 ```
 
 ## GROUP BY and AVG arguments
@@ -155,60 +160,48 @@ pHqry <- "SELECT Site_ID, avg(pH) AS Average_pH, max(pH) AS Max_pH, min(pH) AS M
       FROM tbl_EVENTS
       GROUP BY Site_ID"
 pHWQ <- sqlQuery(con, pHqry)
+head(pHWQ)
 ```
 
 
 ## Unable to get JOINS to work, as syntax for sql queries is different from the DBI package
-However, you can use base R 'merge' as a workaround
-
+### However, you can use base R 'merge' as a workaround
 ```{r}
 #merging the two dataframes created from the first two queries above
 SiteWQ <- merge(SiteNames, SiteWQ, by="Site_ID")
+head(SiteWQ)
 ```
 
 
 ## Lessons Learned
 
-
 ### SQL Project Roadblocks
 *Microsoft Access isn’t included in MS Office for macOS*
-This means although you don’t need to have the microsoft access file opened to use in R, you won’t have the Microsoft Access Driver needed 
+This means although you don’t need to have the Microsoft Access file opened to use in R, you won’t have the Microsoft Access Driver needed. You could use a virtual machine on your Mac to run window applications or dual boot Windows and macOS on your machine…
 
-#### Issue #1: Driver instillation 
+```{r, echo=FALSE, out.width = "80%"}
+knitr::include_graphics("Picture8.png")
+```
 
-First, you want to make sure you have the relevant ODBC driver installed
 
-If you have Microsoft Access installed, the driver should already be installed together however you can also install the drivers separately
+### Driver installation 
+Instead of being able to connect to the Microsoft Access driver through a line of code as per the package documentation, we had to manually create a driver as outlined previously. 
+Even then, only 2 of us were able to get R to connect to the DSN, as the computer is still unable to find the DSN or there is a mismatch between the Driver, the Database, and R. 
+```{r, echo=FALSE, out.width = "80%"}
+knitr::include_graphics("Picture9.png")
+```
 
-To install separately, you can find the 32 bit or 64 bit driver here:  <https://www.microsoft.com/en-us/download/details.aspx?id=>
 
-There are two ways that information about the ODBC driver and the location of the database system is provided to ODBC
+### Compatibility Issues
+```{r, echo=FALSE, out.width = "80%"}
+knitr::include_graphics("Picture7.png")
+```
 
-First way is to provide all information from within R each time the connection to the database system is established
+Using odbcConnectAccess() will sometimes give an error message indicating that odbcConnectAccess is only usable with 32-bit Windows. This can sometimes occur if you have 32 bit office installed on your machine and using 64-bit R… or for other unknown causes in our situation… (we got this error even though we had 64-bit R and Microsoft).
 
-Alternatively, you can establish a DSN (Data Source Name) so that the DNS describes the connection and only the DSN needs to be provided each time a connection is made
+One way to potentially fix this is if you have R that has both 32-bit and 64-bit versions so you can switch to 32-bit, or download an older R version with 32-bit. The downside to switching to 32-bit is that you may come across issues such as memory issues. Then, make sure you have the 32-bit version of the Driver and proceed to establish the connection the same way as steps previously mentioned. Although, we tried this workaround and were still unable to get it to work.
 
-If you want to do it the first method, you need to have the path to the database
+### Syntax differences between 'DBI' and 'RODBC'
+If you are familiar with arguments for SQL queries with the 'DBI' package, the arguments and syntax look a little different under the 'RODBC' package. This made it a little more challenging than we initially thought to just transfer the queries we learned to do in class.
 
-EX. <C:\Users\Lily\Desktop\SQL\Database.accdb>
-
-##### 1. Go to control panel
-![](Picture1.png)
-
-##### 2. Search ODBC data sources. Click on Set up ODBC data sources (either 32-bit or 64-bit depending on your version of Microsoft. In our case, we are using 64-bit)
-![](Picture2.png)
-
-##### 3. Under User DSN, you will see a list of the User Data Sources. Click Add…
-![](Picture3.png)
-
-##### 4. Click on Microsoft Access Driver(*.mdb, *.accdb). Click Finish
-![](Picture4.png)
-
-##### 5. Name your Data Source Name (DSN) and add a description. Click OK
-![](Picture5.png)
-
-##### 6. Now, under User DSN you should see your newly named DSN. Click OK.
-![](Picture6.png)
-
-##### 7.For mac, the ODBC Administrator equivalent is found in Applications/Utilities (which I can’t show since I can’t get Access on Mac)
-
+(table of argument differences)
